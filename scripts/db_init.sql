@@ -1,0 +1,1 @@
+CREATE DATABASE tower_defense;
