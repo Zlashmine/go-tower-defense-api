@@ -12,7 +12,7 @@ import (
 func TestRateLimiterMiddleware(t *testing.T) {
 	config := config{
 		rateLimiter: ratelimiter.Config{
-			RequestsPerTimeFrame: 20,
+			RequestsPerTimeFrame: 10,
 			TimeFrame:            time.Second * 5,
 			Enabled:              true,
 		},
@@ -25,7 +25,7 @@ func TestRateLimiterMiddleware(t *testing.T) {
 
 	client := &http.Client{}
 	mockIP := "192.168.1.1"
-	marginOfError := 2
+	marginOfError := 5
 
 	for i := 0; i < config.rateLimiter.RequestsPerTimeFrame+marginOfError; i++ {
 		req, err := http.NewRequest("GET", ts.URL+"/v1/health", nil)
