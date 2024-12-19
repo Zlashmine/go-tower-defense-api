@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/Zlashmine/go-tower-defense-api/compare/v1.0.0...v1.1.0) (2024-12-19)
+
+
+### Features
+
+* added set read endpoint ([96265f6](https://github.com/Zlashmine/go-tower-defense-api/commit/96265f64e2700af3f8c23c67fc090e9483f5d445))
+
+
+### Bug Fixes
+
+* disabled cache-test for now ([1fe78a8](https://github.com/Zlashmine/go-tower-defense-api/commit/1fe78a85aab3529fcf9063522f952d75db25a92a))
+* fixed version ([ee1481a](https://github.com/Zlashmine/go-tower-defense-api/commit/ee1481a0a1dc005a7b395f660fa5a46c29d79361))
+* made redis toggleable, removed .envfile ([fabc3ed](https://github.com/Zlashmine/go-tower-defense-api/commit/fabc3ed26ab1477ea4ae1484ac72ef8538ebf1c8))
+
 ## 1.0.0 (2024-12-19)
 
 
