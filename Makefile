@@ -4,7 +4,7 @@ MIGRATIONS_PATH = ./cmd/migrations
 
 .PHONY: go
 run-app:
-	@go run cmd/api/*.go
+	@go run cmd/api/*~*_test.go*
 
 .PHONY: db
 db:
