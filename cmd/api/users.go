@@ -103,6 +103,10 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getUserFromCacheOr(context context.Context, id int64) (*models.User, error) {
+	if !app.config.redisConfig.enabled {
+		return app.repository.Users.GetById(context, id)
+	}
+
 	user, _ := app.cacheStore.Users.Get(context, id)
 
 	if user != nil {
@@ -113,5 +117,9 @@ func (app *application) getUserFromCacheOr(context context.Context, id int64) (*
 }
 
 func (app *application) setUserToCache(context context.Context, user *models.User) error {
+	if !app.config.redisConfig.enabled {
+		return nil
+	}
+
 	return app.cacheStore.Users.Set(context, user)
 }

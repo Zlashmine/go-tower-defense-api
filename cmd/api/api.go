@@ -49,6 +49,7 @@ type redisConfig struct {
 	addr string
 	pw   string
 	db   int
+	enabled bool
 }
 
 //	@Title			Tower Defense API
