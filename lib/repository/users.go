@@ -8,13 +8,13 @@ import (
 )
 
 type UsersRepository struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func (repository *UsersRepository) Create(ctx context.Context, payload *models.User) error {
 	query := `INSERT INTO users (username) VALUES ($1) RETURNING id, created, account_status`
 
-	err := repository.db.
+	err := repository.Db.
 		QueryRowContext(
 			ctx,
 			query,
@@ -36,9 +36,12 @@ func (repository *UsersRepository) Create(ctx context.Context, payload *models.U
 func (repository *UsersRepository) GetById(ctx context.Context, id int64) (*models.User, error) {
 	query := `SELECT id, username, created, account_status FROM users WHERE id = $1`
 
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
 	var user models.User
 
-	err := repository.db.QueryRowContext(ctx, query, id).Scan(
+	err := repository.Db.QueryRowContext(ctx, query, id).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Created,
@@ -46,7 +49,12 @@ func (repository *UsersRepository) GetById(ctx context.Context, id int64) (*mode
 	)
 
 	if err != nil {
-		return nil, err
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNotFound
+		default:
+			return nil, err
+		}
 	}
 
 	return &user, nil

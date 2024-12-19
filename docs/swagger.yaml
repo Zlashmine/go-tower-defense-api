@@ -1,0 +1,233 @@
+definitions:
+  models.Code:
+    properties:
+      code:
+        type: string
+      created:
+        type: string
+      id:
+        type: integer
+      is_claimed:
+        type: boolean
+      item:
+        type: string
+    type: object
+  models.CreateCodePayload:
+    properties:
+      code:
+        maxLength: 100
+        type: string
+      item:
+        maxLength: 100
+        type: string
+    required:
+    - code
+    - item
+    type: object
+  models.CreateMessagePayload:
+    properties:
+      content:
+        maxLength: 500
+        type: string
+      sender:
+        maxLength: 100
+        type: string
+      user_id:
+        type: integer
+    required:
+    - content
+    - user_id
+    type: object
+  models.CreateUserPayload:
+    description: Create a new user
+    properties:
+      username:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - username
+    type: object
+  models.Message:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      has_been_read:
+        type: boolean
+      id:
+        type: integer
+      sender:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      account_status:
+        type: string
+      created:
+        type: string
+      id:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/models.Message'
+        type: array
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/codes:
+    get:
+      consumes:
+      - application/json
+      description: Get all codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Code'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all codes
+      tags:
+      - codes
+    post:
+      consumes:
+      - application/json
+      description: Create a new code
+      parameters:
+      - description: Code payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCodePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Code'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new code
+      tags:
+      - codes
+  /v1/health:
+    get:
+      consumes:
+      - application/json
+      description: Health Check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health Check
+      tags:
+      - health
+  /v1/messages:
+    post:
+      consumes:
+      - application/json
+      description: Create a new message
+      parameters:
+      - description: Message payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateMessagePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Message'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new message
+      tags:
+      - messages
+  /v1/messages/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Set Message as Read
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: Set Message as Read
+      tags:
+      - messages
+  /v1/users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new user
+      tags:
+      - users
+  /v1/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a user by ID
+      tags:
+      - users
+swagger: "2.0"

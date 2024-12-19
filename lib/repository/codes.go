@@ -25,11 +25,7 @@ func (repository *CodesRepository) Create(ctx context.Context, payload *models.C
 		&payload.IsClaimed,
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (repository *CodesRepository) GetAll(ctx context.Context) ([]*models.Code, error) {
@@ -59,7 +55,12 @@ func (repository *CodesRepository) GetAll(ctx context.Context) ([]*models.Code, 
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNotFound
+		default:
+			return nil, err
+		}
 	}
 
 	return codes, nil

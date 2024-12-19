@@ -8,10 +8,23 @@ services:
       POSTGRES_DB: tower_defense
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    networks:
+      - backend 
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+
 volumes:
   db-data:
+networks:
+  backend:
+    driver: bridge
