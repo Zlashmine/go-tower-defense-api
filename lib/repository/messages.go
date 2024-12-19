@@ -35,7 +35,7 @@ func (repository *MessageRepository) GetByPlayerId(ctx context.Context, playerId
 	query := `
 	SELECT m.id, m.user_id, m.content, m.created, m.has_been_read, m.sender FROM messages m
 	LEFT JOIN users u ON m.user_id = u.id 
-	WHERE m.user_id = $1
+	WHERE m.user_id = $1 AND m.has_been_read = false
 	ORDER BY m.created DESC
 	`
 
@@ -77,5 +77,11 @@ func (repository *MessageRepository) GetByPlayerId(ctx context.Context, playerId
 }
 
 func (repository *MessageRepository) SetRead(ctx context.Context, id int64) error {
-	return nil
+	query := `
+	UPDATE messages SET has_been_read = true WHERE id = $1
+	`
+
+	_, err := repository.db.ExecContext(ctx, query, id)
+
+	return err
 }
