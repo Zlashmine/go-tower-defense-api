@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 
 	"tower-defense-api/lib/db"
@@ -26,9 +27,10 @@ func main() {
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 		redisConfig: redisConfig{
-			addr: env.GetString("REDIS_ADDR", "localhost:6379"),
-			pw:   env.GetString("REDIS_PW", ""),
-			db:   env.GetInt("REDIS_DB", 0),
+			addr:    env.GetString("REDIS_ADDR", "localhost:6379"),
+			pw:      env.GetString("REDIS_PW", ""),
+			db:      env.GetInt("REDIS_DB", 0),
+			enabled: env.GetBool("REDIS_ENABLED", false),
 		},
 		rateLimiter: ratelimiter.Config{
 			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", true),
@@ -59,13 +61,17 @@ func main() {
 		config.rateLimiter.TimeFrame,
 	)
 
-	redisClient := cache.NewRedisClient(
-		config.redisConfig.addr,
-		config.redisConfig.pw,
-		config.redisConfig.db,
-	)
+	var redisClient *redis.Client
 
-	logger.Info("Connected to redis")
+	if config.redisConfig.enabled {
+		redisClient = cache.NewRedisClient(
+			config.redisConfig.addr,
+			config.redisConfig.pw,
+			config.redisConfig.db,
+		)
+
+		logger.Info("Connected to redis")
+	}
 
 	cacheStore := cache.NewRedisStore(redisClient)
 	repository := repository.New(db)
