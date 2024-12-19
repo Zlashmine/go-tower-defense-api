@@ -13,7 +13,7 @@ import (
 	"tower-defense-api/lib/repository/cache"
 )
 
-const version = ""
+const version = "1.1.0"
 
 func main() {
 	config := config{
