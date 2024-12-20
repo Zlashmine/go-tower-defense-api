@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Zlashmine/go-tower-defense-api/compare/v1.1.0...v1.2.0) (2024-12-20)
+
+
+### Features
+
+* Added authorization and some metrics ([#6](https://github.com/Zlashmine/go-tower-defense-api/issues/6)) ([881c245](https://github.com/Zlashmine/go-tower-defense-api/commit/881c24512f99c9c9c425927bea2be7f86a23f67e))
+
 ## [1.1.0](https://github.com/Zlashmine/go-tower-defense-api/compare/v1.0.0...v1.1.0) (2024-12-19)
 
 
