@@ -17,6 +17,7 @@ import (
 	"go.uber.org/zap"
 
 	"tower-defense-api/docs"
+	"tower-defense-api/lib/notifications"
 	"tower-defense-api/lib/ratelimiter"
 	"tower-defense-api/lib/repository"
 	"tower-defense-api/lib/repository/cache"
@@ -28,6 +29,7 @@ type application struct {
 	repository  repository.Repository
 	cacheStore  cache.Store
 	rateLimiter ratelimiter.Limiter
+	notification      notifications.Client
 }
 
 type config struct {
@@ -38,6 +40,7 @@ type config struct {
 	apiURL      string
 	redisConfig redisConfig
 	rateLimiter ratelimiter.Config
+	mailer      mailConfig
 }
 
 type dbConfig struct {
@@ -52,6 +55,16 @@ type redisConfig struct {
 	pw      string
 	db      int
 	enabled bool
+}
+
+type mailConfig struct {
+	sendGrid  sendGridConfig
+	fromEmail string
+	exp       time.Duration
+}
+
+type sendGridConfig struct {
+	apiKey string
 }
 
 //	@Title			Tower Defense API

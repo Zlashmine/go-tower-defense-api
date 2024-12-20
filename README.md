@@ -32,6 +32,7 @@ direnv allow .
 export ADDR=:8080
 export EXTERNAL_URL=localhost:8080
 export ENV=development
+export AUTH_TOKEN=abc123
 
 export DB_ADDR=postgres://user:password@localhost/tower_defense?sslmode=disable
 
@@ -46,6 +47,9 @@ export REDIS_ENABLED=false
 
 export RATE_LIMITER_REQUESTS_COUNT=20
 export RATE_LIMITER_ENABLED=true
+
+export FROM_EMAIL="td.mazing@gmail.com"
+export SENDGRID_API_KEY=""
 ```
 
 ## __Documentation__

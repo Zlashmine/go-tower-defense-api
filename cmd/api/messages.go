@@ -48,6 +48,17 @@ func (app *application) createMessageHandler(w http.ResponseWriter, r *http.Requ
 	if err := json.JSONResponse(w, http.StatusCreated, message); err != nil {
 		app.internalServerError(w, r, err)
 	}
+
+	isProdEnv := app.config.env == "production"
+	status, err := app.notification.Send(message, !isProdEnv)
+
+	if err != nil {
+		app.logger.Errorw("error sending welcome email", "error", err)
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	app.logger.Infow("Email sent", "status code", status)
 }
 
 // GetMessagesHandler godoc
@@ -58,7 +69,7 @@ func (app *application) createMessageHandler(w http.ResponseWriter, r *http.Requ
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path	int	true	"Message ID"
-//	@Success		200	
+//	@Success		200
 //	@Router			/v1/messages/{id} [put]
 //	@Security		ApiKeyAuth
 func (app *application) setReadHandler(w http.ResponseWriter, r *http.Request) {

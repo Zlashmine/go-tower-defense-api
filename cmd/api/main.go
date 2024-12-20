@@ -10,6 +10,7 @@ import (
 
 	"tower-defense-api/lib/db"
 	"tower-defense-api/lib/env"
+	"tower-defense-api/lib/notifications"
 	"tower-defense-api/lib/ratelimiter"
 	"tower-defense-api/lib/repository"
 	"tower-defense-api/lib/repository/cache"
@@ -40,6 +41,13 @@ func main() {
 			RequestsPerTimeFrame: env.GetInt("RATE_LIMITER_REQUESTS_COUNT", 20),
 			TimeFrame:            time.Second * 30,
 		},
+		mailer: mailConfig{
+			exp:       time.Hour * 24 * 3,
+			fromEmail: env.GetString("FROM_EMAIL", ""),
+			sendGrid: sendGridConfig{
+				apiKey: env.GetString("SENDGRID_API_KEY", ""),
+			},
+		},
 	}
 
 	logger := zap.Must(zap.NewProduction()).Sugar()
@@ -64,6 +72,12 @@ func main() {
 		config.rateLimiter.TimeFrame,
 	)
 
+	// Mailer
+	sendgridMail := notifications.NewSendgrid(config.mailer.sendGrid.apiKey, config.mailer.fromEmail)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	var redisClient *redis.Client
 
 	if config.redisConfig.enabled {
@@ -80,11 +94,12 @@ func main() {
 	repository := repository.New(db)
 
 	app := &application{
-		config:      config,
-		repository:  repository,
-		cacheStore:  cacheStore,
-		logger:      logger,
-		rateLimiter: ratelimiter,
+		config:       config,
+		repository:   repository,
+		cacheStore:   cacheStore,
+		logger:       logger,
+		rateLimiter:  ratelimiter,
+		notification: sendgridMail,
 	}
 
 	expvar.NewString("version").Set(version)
