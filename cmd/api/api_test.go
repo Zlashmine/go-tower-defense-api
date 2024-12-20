@@ -34,6 +34,7 @@ func TestRateLimiterMiddleware(t *testing.T) {
 		}
 
 		req.Header.Set("X-Forwarded-For", mockIP)
+		req.Header.Set("Authorization", "Bearer token")
 
 		resp, err := client.Do(req)
 		if err != nil {

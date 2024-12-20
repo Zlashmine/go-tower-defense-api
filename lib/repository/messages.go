@@ -77,9 +77,7 @@ func (repository *MessageRepository) GetByPlayerId(ctx context.Context, playerId
 }
 
 func (repository *MessageRepository) SetRead(ctx context.Context, id int64) error {
-	query := `
-	UPDATE messages SET has_been_read = true WHERE id = $1
-	`
+	query := `UPDATE messages SET has_been_read = true WHERE id = $1`
 
 	_, err := repository.db.ExecContext(ctx, query, id)
 

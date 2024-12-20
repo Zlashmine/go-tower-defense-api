@@ -1,6 +1,8 @@
 package main
 
 import (
+	"expvar"
+	"runtime"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -17,9 +19,10 @@ const version = "1.1.0"
 
 func main() {
 	config := config{
-		addr:   env.GetString("ADDR", ":8080"),
-		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
-		env:    env.GetString("ENV", "development"),
+		addr:      env.GetString("ADDR", ":8080"),
+		apiURL:    env.GetString("EXTERNAL_URL", "localhost:8080"),
+		env:       env.GetString("ENV", "development"),
+		authToken: env.GetString("AUTH_TOKEN", ""),
 		db: dbConfig{
 			addr:         env.GetString("DB_ADDR", "postgres://user:password@localhost/tower_defense?sslmode=disable"),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 10),
@@ -83,6 +86,14 @@ func main() {
 		logger:      logger,
 		rateLimiter: ratelimiter,
 	}
+
+	expvar.NewString("version").Set(version)
+	expvar.Publish("database", expvar.Func(func() any {
+		return db.Stats()
+	}))
+	expvar.Publish("goroutines", expvar.Func(func() any {
+		return runtime.NumGoroutine()
+	}))
 
 	mux := app.mount()
 	logger.Fatal(app.run(mux))

@@ -15,6 +15,8 @@ import (
 func newTestApplication(t *testing.T, cfg config) *application {
 	t.Helper()
 
+	cfg.authToken = "token"
+
 	logger := zap.Must(zap.NewDevelopment()).Sugar()
 	mockRepository := repository.NewMockRepository()
 	mockCacheStore := cache.NewMockStore()
@@ -29,11 +31,13 @@ func newTestApplication(t *testing.T, cfg config) *application {
 		repository: mockRepository,
 		cacheStore: mockCacheStore,
 		rateLimiter: rateLimiter,
+		config:     cfg,
 	}
 }
 
 func executeRequest(mux http.Handler, req *http.Request) *httptest.ResponseRecorder {
 	recorder := httptest.NewRecorder()
+	req.Header.Set("Authorization", "Bearer token")
 	mux.ServeHTTP(recorder, req)
 	return recorder
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"expvar"
 	"fmt"
 	"net/http"
 	"os"
@@ -31,6 +32,7 @@ type application struct {
 
 type config struct {
 	addr        string
+	authToken   string
 	db          dbConfig
 	env         string
 	apiURL      string
@@ -46,9 +48,9 @@ type dbConfig struct {
 }
 
 type redisConfig struct {
-	addr string
-	pw   string
-	db   int
+	addr    string
+	pw      string
+	db      int
 	enabled bool
 }
 
@@ -66,6 +68,7 @@ func (app *application) mount() http.Handler {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(60 * time.Second))
+	router.Use(app.AuthTokenMiddleware)
 
 	if app.config.rateLimiter.Enabled {
 		router.Use(app.RateLimiterMiddleware)
@@ -75,6 +78,7 @@ func (app *application) mount() http.Handler {
 
 	router.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
+		r.Get("/debug/vars", expvar.Handler().ServeHTTP)
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsUrl)))
 
 		r.Route("/codes", func(r chi.Router) {
