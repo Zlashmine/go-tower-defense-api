@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Zlashmine/go-tower-defense-api/compare/v1.2.0...v1.3.0) (2024-12-20)
+
+
+### Features
+
+* Added twilio integration and sending emails on message. ([634f108](https://github.com/Zlashmine/go-tower-defense-api/commit/634f108ea763268ec33d6850a1038956ef5e04f9))
+
 ## [1.2.0](https://github.com/Zlashmine/go-tower-defense-api/compare/v1.1.0...v1.2.0) (2024-12-20)
 
 
